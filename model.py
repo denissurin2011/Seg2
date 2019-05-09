@@ -169,7 +169,7 @@ with tf.device('/cpu:0'): #device:GPU:1
     with tf.Session(config=config) as sess:
         weights_path = get_file(
                                 'pspnet',
-                                'https://www.dropbox.com/s/c17g94n946tpalb/pspnet101_cityscapes.h5?dl=1')
+                                'https://www.dropbox.com/s/c17g94n946tpalb/pspnet101_cityscapes.h5')
         model = load_model('weights_path', custom_objects={'tversky_loss': tversky_loss})
         #sess.run(tf.global_variables_initializer())
         pred = model.predict(x_test, verbose=0)

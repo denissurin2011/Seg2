@@ -5,6 +5,8 @@ from skimage.io import imread, imshow, imsave
 from skimage import data, color
 from skimage.transform import rescale, resize, downscale_local_mean
 import numpy as np
+import matplotlib
+matplotlib.use('PS')
 import matplotlib.pyplot as plt
 
 
@@ -157,25 +159,29 @@ def eval_model(model):
     score = eval_preds(new_x, y_val)
     return score
 
-#xTest = "../rvygon_data"
+import json
+
+
+
+xTest = "../rvygon_data"
 output_dir = "res"
 xTest, output_dir = sys.argv[1:]
 os.environ['CITYSCAPES_DATASET'] = xTest
-x_test, yyyyyy, filenames = importBatch(500, 0, 0, 'test', 1) 
-x_test = x_test.astype('uint8') 
+x_test, yyyyyy, filenames = importBatch(500, 0, 0, 'test', 1)
+x_test = x_test.astype('uint8')
 with tf.device('/cpu:0'): #device:GPU:1
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     with tf.Session(config=config) as sess:
-        weights_path = get_file(
-                                'pspnet',
-                                'https://www.dropbox.com/s/c17g94n946tpalb/pspnet101_cityscapes.h5')
-        model = load_model('weights_path', custom_objects={'tversky_loss': tversky_loss})
+        with open('program/pspnet101_cityscapes.json') as jsonfile:
+            data = json.load(jsonfile)
+        json_string = json.dumps(data)
+        model = model_from_json(json_string, custom_objects={'tversky_loss': tversky_loss})
         #sess.run(tf.global_variables_initializer())
         pred = model.predict(x_test, verbose=0)
         pred = np.argmax(pred,axis=3).astype(int)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        for i in range(len(filenames)): 
+        for i in range(len(filenames)):
             impath = os.path.join(output_dir, filenames[i].split('/')[-1]+'_gtFine_labelIds.png')
             imsave(impath, pred[i])

@@ -159,9 +159,20 @@ def eval_model(model):
     score = eval_preds(new_x, y_val)
     return score
 
-import json
-
-
+#import json
+#
+#with open('/Users/denissurin/Downloads/pspnet101_cityscapes.json') as jsonfile:
+#    data = json.load(jsonfile)
+#json_string = json.dumps(data)
+#model = model_from_json(json_string, custom_objects={'tversky_loss': tversky_loss})
+#model.layers.pop(0)
+#newInput = Input(shape=(2048,1024,3))
+#newOutputs = model(newInput)
+#newModel = Model(newInput, newOutputs)
+#model = Model(newInput, newOutputs)
+#pred = model.predict(x_test, verbose=0)
+#pred = np.argmax(pred,axis=3).astype(int)
+#print(pred)
 
 xTest = "../rvygon_data"
 output_dir = "res"
@@ -173,10 +184,11 @@ with tf.device('/cpu:0'): #device:GPU:1
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     with tf.Session(config=config) as sess:
-        with open('program/pspnet101_cityscapes.json') as jsonfile:
-            data = json.load(jsonfile)
-        json_string = json.dumps(data)
-        model = model_from_json(json_string, custom_objects={'tversky_loss': tversky_loss})
+#        with open('program/pspnet101_cityscapes.json') as jsonfile:
+#            data = json.load(jsonfile)
+#        json_string = json.dumps(data)
+#        model = model_from_json(json_string, custom_objects={'tversky_loss': tversky_loss})
+        model = load_model('program/psp_best.h5', custom_objects={'tversky_loss': tversky_loss})
         #sess.run(tf.global_variables_initializer())
         pred = model.predict(x_test, verbose=0)
         pred = np.argmax(pred,axis=3).astype(int)
